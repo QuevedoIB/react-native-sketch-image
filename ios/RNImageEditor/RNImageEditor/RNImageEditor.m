@@ -824,6 +824,14 @@
     }
 }
 
+- (void)setTextEntityFontType:(NSString *)newFont {
+    TextEntity *textEntity = [self getSelectedTextEntity];
+    if (textEntity && newFont && [newFont length] > 0) {
+        [textEntity updateFont:newFont];
+        [textEntity setNeedsDisplay];
+    }
+}
+
 - (TextEntity *)getSelectedTextEntity {
     if (self.selectedEntity && [self.selectedEntity isKindOfClass:[TextEntity class]]) {
         return (TextEntity *)self.selectedEntity;

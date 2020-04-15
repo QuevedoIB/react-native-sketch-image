@@ -96,6 +96,13 @@
     self.text = newText;
 }
 
+- (void)updateFont:(NSString *)newFont {
+    self.fontType = newFont;
+    if (self.fontType) {
+        self.font = [UIFont fontWithName: self.fontType size: self.fontSize];
+    }
+}
+
 - (void)updateFontSize:(CGFloat)newFontSize {
     if (newFontSize >= 5 && newFontSize <= 25) {
         self.fontSize = newFontSize;

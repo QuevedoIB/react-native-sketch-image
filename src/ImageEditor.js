@@ -10,15 +10,15 @@ import ReactNative, {
     PixelRatio,
     Platform,
     ViewPropTypes,
-    processColor
+    processColor,
 } from "react-native";
 import { requestPermissions } from "./handlePermissions";
 
 const RNImageEditor = requireNativeComponent("RNImageEditor", ImageEditor, {
     nativeOnly: {
         nativeID: true,
-        onChange: true
-    }
+        onChange: true,
+    },
 });
 const ImageEditorManager = NativeModules.RNImageEditorManager || {};
 
@@ -38,7 +38,7 @@ class ImageEditor extends React.Component {
             shapeBorderStyle: PropTypes.string,
             shapeBorderStrokeWidth: PropTypes.number,
             shapeColor: PropTypes.string,
-            shapeStrokeWidth: PropTypes.number
+            shapeStrokeWidth: PropTypes.number,
         }),
         user: PropTypes.string,
         scale: PropTypes.number,
@@ -56,17 +56,17 @@ class ImageEditor extends React.Component {
                 position: PropTypes.shape({ x: PropTypes.number, y: PropTypes.number }),
                 coordinate: PropTypes.oneOf(["Absolute", "Ratio"]),
                 alignment: PropTypes.oneOf(["Left", "Center", "Right"]),
-                lineHeightMultiple: PropTypes.number
+                lineHeightMultiple: PropTypes.number,
             })
         ),
         localSourceImage: PropTypes.shape({
             filename: PropTypes.string,
             directory: PropTypes.string,
-            mode: PropTypes.oneOf(["AspectFill", "AspectFit", "ScaleToFill"])
+            mode: PropTypes.oneOf(["AspectFill", "AspectFit", "ScaleToFill"]),
         }),
 
         permissionDialogTitle: PropTypes.string,
-        permissionDialogMessage: PropTypes.string
+        permissionDialogMessage: PropTypes.string,
     };
 
     static defaultProps = {
@@ -84,7 +84,7 @@ class ImageEditor extends React.Component {
             shapeBorderStyle: "Dashed",
             shapeBorderStrokeWidth: 1,
             shapeColor: "#000000",
-            shapeStrokeWidth: 3
+            shapeStrokeWidth: 3,
         },
         user: null,
         scale: 1,
@@ -102,7 +102,7 @@ class ImageEditor extends React.Component {
 
     state = {
         text: null,
-        hasPanResponder: false
+        hasPanResponder: false,
     };
 
     constructor(props) {
@@ -118,14 +118,14 @@ class ImageEditor extends React.Component {
 
         this.state = {
             text: ImageEditor.processText(props.text ? props.text.map((t) => Object.assign({}, t)) : null),
-            hasPanResponder: false
+            hasPanResponder: false,
         };
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
         if (nextProps.text) {
             return {
-                text: ImageEditor.processText(nextProps.text ? nextProps.text.map((t) => Object.assign({}, t)) : null)
+                text: ImageEditor.processText(nextProps.text ? nextProps.text.map((t) => Object.assign({}, t)) : null),
             };
         } else {
             return null;
@@ -135,14 +135,6 @@ class ImageEditor extends React.Component {
     static processText(text) {
         text && text.forEach((t) => (t.fontColor = processColor(t.fontColor)));
         return text;
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        if (prevState.text !== this.state.text) {
-            this.setState({
-                text: this.state.text
-            });
-        }
     }
 
     clear() {
@@ -167,10 +159,9 @@ class ImageEditor extends React.Component {
             if (this._paths.filter((p) => p.path.id === data.path.id).length === 0) this._paths.push(data);
             const pathData = data.path.data.map((p) => {
                 const coor = p.split(",").map((pp) => parseFloat(pp).toFixed(2));
-                return `${(coor[0] * this._screenScale * this._size.width) / data.size.width},${(coor[1] *
-                    this._screenScale *
-                    this._size.height) /
-                    data.size.height}`;
+                return `${(coor[0] * this._screenScale * this._size.width) / data.size.width},${
+                    (coor[1] * this._screenScale * this._size.height) / data.size.height
+                }`;
             });
             UIManager.dispatchViewManagerCommand(
                 this._handle,
@@ -243,6 +234,14 @@ class ImageEditor extends React.Component {
         );
     }
 
+    changeSelectedShapeFont(newFont) {
+        UIManager.dispatchViewManagerCommand(
+            this._handle,
+            UIManager.getViewManagerConfig(RNImageEditor).Commands.changeShapeFont,
+            [newFont]
+        );
+    }
+
     save(imageType, transparent, folder, filename, includeImage, includeText, cropToImageSize) {
         UIManager.dispatchViewManagerCommand(
             this._handle,
@@ -299,7 +298,7 @@ class ImageEditor extends React.Component {
                     id: parseInt(Math.random() * 100000000),
                     color: this.props.strokeColor,
                     width: this.props.strokeWidth,
-                    data: []
+                    data: [],
                 };
 
                 UIManager.dispatchViewManagerCommand(
@@ -313,7 +312,7 @@ class ImageEditor extends React.Component {
                     [
                         parseFloat((gestureState.x0 - this._offset.x).toFixed(2) * this._screenScale),
                         parseFloat((gestureState.y0 - this._offset.y).toFixed(2) * this._screenScale),
-                        false
+                        false,
                     ]
                 );
                 const x = parseFloat((gestureState.x0 - this._offset.x).toFixed(2)),
@@ -355,10 +354,10 @@ class ImageEditor extends React.Component {
 
             onShouldBlockNativeResponder: (evt, gestureState) => {
                 return this.props.touchEnabled;
-            }
+            },
         });
         this.setState({
-            hasPanResponder: true
+            hasPanResponder: true,
         });
     }
 
@@ -395,7 +394,7 @@ class ImageEditor extends React.Component {
                     shapeBorderStyle: this.props.shapeConfiguration.shapeBorderStyle,
                     shapeBorderStrokeWidth: this.props.shapeConfiguration.shapeBorderStrokeWidth,
                     shapeColor: processColor(this.props.strokeColor),
-                    shapeStrokeWidth: this.props.strokeWidth
+                    shapeStrokeWidth: this.props.strokeWidth,
                 }}
                 text={this.state.text}
             />

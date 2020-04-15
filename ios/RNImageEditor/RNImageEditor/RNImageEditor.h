@@ -38,4 +38,5 @@
 - (void)increaseTextEntityFontSize;
 - (void)decreaseTextEntityFontSize;
 - (void)setTextEntityText:(NSString *)newText;
+- (void)setTextEntityFontType:(NSString *)newFont;
 @end

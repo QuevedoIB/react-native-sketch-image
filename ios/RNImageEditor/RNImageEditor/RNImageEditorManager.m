@@ -172,6 +172,13 @@ RCT_EXPORT_METHOD(changeShapeText:(nonnull NSNumber *)reactTag newText:(NSString
     }];
 }
 
+RCT_EXPORT_METHOD(changeShapeFont:(nonnull NSNumber *)reactTag newFont:(NSString *) newFont)
+{
+    [self runCanvas:reactTag block:^(RNImageEditor *canvas) {
+        [canvas setTextEntityFontType:newFont];
+    }];
+}
+
 #pragma mark - Utils
 
 - (void)runCanvas:(nonnull NSNumber *)reactTag block:(void (^)(RNImageEditor *canvas))block {
