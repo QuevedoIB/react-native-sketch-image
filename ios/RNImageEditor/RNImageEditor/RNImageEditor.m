@@ -894,14 +894,15 @@
     }
 }
 
-- (void)onShapeSelectionChanged:(MotionEntity *)nextEntity {
+- (void)onShapeSelectionChanged:(TextEntity *)nextEntity {
     BOOL isShapeSelected = NO;
     if (nextEntity) {
         isShapeSelected = YES;
     }
     if (_onChange) {
         if (isShapeSelected) {
-            _onChange(@{ @"isShapeSelected": @YES });
+            
+            _onChange(@{ @"isShapeSelected":  @{ @"text": nextEntity.text, @"font": nextEntity.fontType }});
         } else {
             // Add delay!
             _onChange(@{ @"isShapeSelected": @NO });
