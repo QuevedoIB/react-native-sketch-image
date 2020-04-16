@@ -36,6 +36,6 @@
 
 - (void)updateText: (NSString *)newText;
 - (void)updateFontSize: (CGFloat)newFontSize;
-- (void)updateFont: (CGFloat)newFont;
+- (void)updateFont: (NSString *)newFont;
 
 @end
