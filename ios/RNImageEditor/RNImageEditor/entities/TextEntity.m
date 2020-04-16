@@ -94,6 +94,20 @@
 
 - (void)updateText:(NSString *)newText {
     self.text = newText;
+
+           self.font = [self.font fontWithSize:self.fontSize];
+           self.textAttributes = @{
+                                   NSFontAttributeName: self.font,
+                                   NSForegroundColorAttributeName: self.entityStrokeColor,
+                                   NSParagraphStyleAttributeName: self.style
+                                   };
+           CGRect textRect = [self.text boundingRectWithSize:CGSizeMake(self.bounds.size.width, CGFLOAT_MAX)
+                                                     options:NSStringDrawingUsesLineFragmentOrigin
+                                                  attributes:self.textAttributes
+                                                     context:nil];
+           self.textSize = textRect.size;
+                     self.bounds = CGRectMake(self.bounds.origin.x, self.bounds.origin.y, textRect.size.width + self.bordersPadding * 2, textRect.size.height);
+    
 }
 
 - (void)updateFont:(NSString *)newFont {
@@ -101,6 +115,17 @@
     if (self.fontType) {
         self.font = [UIFont fontWithName: self.fontType size: self.fontSize];
     }
+    self.textAttributes = @{
+                                   NSFontAttributeName: self.font,
+                                   NSForegroundColorAttributeName: self.entityStrokeColor,
+                                   NSParagraphStyleAttributeName: self.style
+                                   };
+           CGRect textRect = [self.text boundingRectWithSize:CGSizeMake(self.bounds.size.width, CGFLOAT_MAX)
+                                                     options:NSStringDrawingUsesLineFragmentOrigin
+                                                  attributes:self.textAttributes
+                                                     context:nil];
+           self.textSize = textRect.size;
+                     self.bounds = CGRectMake(self.bounds.origin.x, self.bounds.origin.y, textRect.size.width + self.bordersPadding * 2, textRect.size.height);
 }
 
 - (void)updateFontSize:(CGFloat)newFontSize {
