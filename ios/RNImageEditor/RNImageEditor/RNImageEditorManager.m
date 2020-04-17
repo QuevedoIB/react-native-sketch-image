@@ -144,10 +144,10 @@ RCT_EXPORT_METHOD(unselectShape:(nonnull NSNumber *)reactTag)
     }];
 }
 
-RCT_EXPORT_METHOD(addShape:(nonnull NSNumber *)reactTag shapeType:(NSString *) shapeType textShapeFontType:(NSString *) textShapeFontType textShapeFontSize:(nonnull NSNumber *) textShapeFontSize textShapeText:(NSString *) textShapeText imageShapeAsset:(NSString *)imageShapeAsset)
+RCT_EXPORT_METHOD(addShape:(nonnull NSNumber *)reactTag shapeType:(NSString *) shapeType textShapeFontType:(NSString *) textShapeFontType textShapeFontSize:(nonnull NSNumber *) textShapeFontSize textShapeText:(NSString *) textShapeText imageShapeAsset:(NSString *)imageShapeAsset textShapeColor: (NSString *)textShapeColor)
 {
     [self runCanvas:reactTag block:^(RNImageEditor *canvas) {
-        [canvas addEntity:shapeType textShapeFontType:textShapeFontType textShapeFontSize:textShapeFontSize textShapeText:textShapeText imageShapeAsset:imageShapeAsset];
+        [canvas addEntity:shapeType textShapeFontType:textShapeFontType textShapeFontSize:textShapeFontSize textShapeText:textShapeText imageShapeAsset:imageShapeAsset textShapeColor:textShapeColor];
     }];
 }
 
@@ -176,6 +176,13 @@ RCT_EXPORT_METHOD(changeShapeFont:(nonnull NSNumber *)reactTag newFont:(NSString
 {
     [self runCanvas:reactTag block:^(RNImageEditor *canvas) {
         [canvas setTextEntityFontType:newFont];
+    }];
+}
+
+RCT_EXPORT_METHOD(changeShapeColor:(nonnull NSNumber *)reactTag newColor:(NSString *) newColor)
+{
+    [self runCanvas:reactTag block:^(RNImageEditor *canvas) {
+        [canvas setTextEntityColor:newColor];
     }];
 }
 

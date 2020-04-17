@@ -136,11 +136,11 @@
     }
     
     for (MotionEntity *entity in self.motionEntities) {
-        [entity updateStrokeSettings:self.entityBorderStyle
-                   borderStrokeWidth:self.entityBorderStrokeWidth
-                   borderStrokeColor:self.entityBorderColor
-                   entityStrokeWidth:self.entityStrokeWidth
-                   entityStrokeColor:self.entityStrokeColor];
+       // [entity updateStrokeSettings:self.entityBorderStyle
+                 //  borderStrokeWidth:self.entityBorderStrokeWidth
+                  // borderStrokeColor:self.entityBorderColor
+                  // entityStrokeWidth:self.entityStrokeWidth
+                  // entityStrokeColor:self.entityStrokeColor];
         
         if ([entity isSelected]) {
             [entity setNeedsDisplay];
@@ -595,7 +595,7 @@
     }
 }
 
-- (void)addEntity:(NSString *)entityType textShapeFontType:(NSString *)textShapeFontType textShapeFontSize:(NSNumber *)textShapeFontSize textShapeText:(NSString *)textShapeText imageShapeAsset:(NSString *)imageShapeAsset {
+- (void)addEntity:(NSString *)entityType textShapeFontType:(NSString *)textShapeFontType textShapeFontSize:(NSNumber *)textShapeFontSize textShapeText:(NSString *)textShapeText imageShapeAsset:(NSString *)imageShapeAsset textShapeColor: (NSString *)textShapeColor {
     
     switch ([@[@"Circle", @"Rect", @"Square", @"Triangle", @"Arrow", @"Text", @"Image"] indexOfObject: entityType]) {
         case 1:
@@ -611,7 +611,7 @@
             [self addArrowEntity];
             break;
         case 5:
-            [self addTextEntity:textShapeFontType withFontSize:textShapeFontSize withText:textShapeText];
+            [self addTextEntity:textShapeFontType withFontSize:textShapeFontSize withText:textShapeText withColor:textShapeColor ];
             break;
         case 6:
             // TODO: ImageEntity Doesn't exist yet
@@ -720,9 +720,11 @@
     [self selectEntity:entity];
 }
 
-- (void)addTextEntity:(NSString *)fontType withFontSize: (NSNumber *)fontSize withText: (NSString *)text {
+- (void)addTextEntity:(NSString *)fontType withFontSize: (NSNumber *)fontSize withText: (NSString *)text withColor: (NSString *)color {
     CGFloat centerX = CGRectGetMidX(self.bounds);
     CGFloat centerY = CGRectGetMidY(self.bounds);
+    
+    UIColor *initialColor = [self colorWithHexString:color];
     
     TextEntity *entity = [[TextEntity alloc]
                            initAndSetupWithParent:self.bounds.size.width
@@ -736,13 +738,30 @@
                            bordersPadding:5.0f
                            borderStyle:self.entityBorderStyle
                            borderStrokeWidth:self.entityBorderStrokeWidth
-                           borderStrokeColor:self.entityBorderColor
+                           borderStrokeColor:initialColor
                            entityStrokeWidth:self.entityStrokeWidth
-                           entityStrokeColor:self.entityStrokeColor];
+                           entityStrokeColor:initialColor];
     
     [self.motionEntities addObject:entity];
     [self onShapeSelectionChanged:entity];
     [self selectEntity:entity];
+}
+
+- (UIColor *)colorWithHexString:(NSString *)stringToConvert
+{
+    NSString *noHashString = [stringToConvert stringByReplacingOccurrencesOfString:@"#" withString:@""]; // remove the #
+    
+    
+    NSScanner *scanner = [NSScanner scannerWithString:noHashString];
+    [scanner setCharactersToBeSkipped:[NSCharacterSet symbolCharacterSet]]; // remove + and $
+
+    unsigned hex;
+    if (![scanner scanHexInt:&hex]) return nil;
+    int r = (hex >> 16) & 0xFF;
+    int g = (hex >> 8) & 0xFF;
+    int b = (hex) & 0xFF;
+    
+    return [UIColor colorWithRed:r / 255.0f green:g / 255.0f blue:b / 255.0f alpha:1.0f];
 }
 
 - (void)selectEntity:(MotionEntity *)entity {
@@ -832,6 +851,14 @@
     }
 }
 
+- (void)setTextEntityColor:(NSString *)newColor {
+    TextEntity *textEntity = [self getSelectedTextEntity];
+    if (textEntity && newColor && [newColor length] > 0) {
+        [textEntity updateColor:newColor];
+        [textEntity setNeedsDisplay];
+    }
+}
+
 - (TextEntity *)getSelectedTextEntity {
     if (self.selectedEntity && [self.selectedEntity isKindOfClass:[TextEntity class]]) {
         return (TextEntity *)self.selectedEntity;
@@ -902,12 +929,38 @@
     if (_onChange) {
         if (isShapeSelected) {
             
-            _onChange(@{ @"isShapeSelected":  @{ @"text": nextEntity.text, @"font": nextEntity.fontType }});
+            NSString *colorCode = [self hexStringFromColor:nextEntity.entityStrokeColor];
+            
+            _onChange(@{ @"isShapeSelected":  @{ @"text": nextEntity.text, @"font": nextEntity.fontType,  @"color": colorCode}});
         } else {
             // Add delay!
             _onChange(@{ @"isShapeSelected": @NO });
         }
     }
+}
+
+- (NSString *)hexStringFromColor:(UIColor *)color
+{
+    CGColorSpaceModel colorSpace = CGColorSpaceGetModel(CGColorGetColorSpace(color.CGColor));
+    const CGFloat *components = CGColorGetComponents(color.CGColor);
+
+    CGFloat r, g, b;
+
+    if (colorSpace == kCGColorSpaceModelMonochrome) {
+        r = components[0];
+        g = components[0];
+        b = components[0];
+    }
+    else if (colorSpace == kCGColorSpaceModelRGB) {
+        r = components[0];
+        g = components[1];
+        b = components[2];
+    }
+
+    return [NSString stringWithFormat:@"#%02lX%02lX%02lX",
+            lroundf(r * 255),
+            lroundf(g * 255),
+            lroundf(b * 255)];
 }
 
 @end

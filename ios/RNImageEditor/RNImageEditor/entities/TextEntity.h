@@ -37,5 +37,6 @@
 - (void)updateText: (NSString *)newText;
 - (void)updateFontSize: (CGFloat)newFontSize;
 - (void)updateFont: (NSString *)newFont;
-
+- (void)updateColor:(NSString *)newColor;
+- (UIColor *)colorWithHexString:(NSString *)stringToConvert;
 @end
