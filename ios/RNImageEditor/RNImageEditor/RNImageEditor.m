@@ -743,7 +743,7 @@
                            entityStrokeColor:initialColor];
     
     [self.motionEntities addObject:entity];
-    [self onShapeSelectionChanged:entity];
+    [self onShapeTextSelectionChanged:entity];
     [self selectEntity:entity];
 }
 
@@ -781,15 +781,15 @@
 }
 
 - (void)updateSelectionOnTapWithLocationPoint:(CGPoint)tapLocation {
-    MotionEntity *nextEntity = [self findEntityAtPointX:tapLocation.x andY:tapLocation.y];
-    [self onShapeSelectionChanged:nextEntity];
+    TextEntity *nextEntity = [self findEntityAtPointX:tapLocation.x andY:tapLocation.y];
+    [self onShapeTextSelectionChanged:nextEntity];
     [self selectEntity:nextEntity];
 }
 
-- (MotionEntity *)findEntityAtPointX:(CGFloat)x andY: (CGFloat)y {
-    MotionEntity *nextEntity = nil;
+- (TextEntity *)findEntityAtPointX:(CGFloat)x andY: (CGFloat)y {
+    TextEntity *nextEntity = nil;
     CGPoint point = CGPointMake(x, y);
-    for (MotionEntity *entity in self.motionEntities) {
+    for (TextEntity *entity in self.motionEntities) {
         if ([entity isPointInEntity:point]) {
             nextEntity = entity;
             break;
@@ -921,7 +921,7 @@
     }
 }
 
-- (void)onShapeSelectionChanged:(TextEntity *)nextEntity {
+- (void)onShapeTextSelectionChanged:(TextEntity *)nextEntity {
     BOOL isShapeSelected = NO;
     if (nextEntity) {
         isShapeSelected = YES;
@@ -932,6 +932,21 @@
             NSString *colorCode = [self hexStringFromColor:nextEntity.entityStrokeColor];
             
             _onChange(@{ @"isShapeSelected":  @{ @"text": nextEntity.text, @"font": nextEntity.fontType,  @"color": colorCode}});
+        } else {
+            // Add delay!
+            _onChange(@{ @"isShapeSelected": @NO });
+        }
+    }
+}
+
+- (void)onShapeSelectionChanged:(MotionEntity *)nextEntity {
+    BOOL isShapeSelected = NO;
+    if (nextEntity) {
+        isShapeSelected = YES;
+    }
+    if (_onChange) {
+        if (isShapeSelected) {
+              _onChange(@{ @"isShapeSelected": @YES });
         } else {
             // Add delay!
             _onChange(@{ @"isShapeSelected": @NO });
